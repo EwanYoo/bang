@@ -14,3 +14,5 @@ function adjustLayout(){if(!mobileLayout.matches)setQueryExpanded(true);$('detai
 mobileLayout.addEventListener('change',adjustLayout);
 const savedBeforeInitialization=readSettings();initializeWeather();selectView(['weather','compare','year'].includes(savedBeforeInitialization.view)?savedBeforeInitialization.view:'weather');adjustLayout();
 if(activeView==='weather')load();else if(activeView==='compare')$('compareStatus').textContent='이전 조건을 복원했습니다. 비교 버튼을 눌러 조회하세요.';else $('yearStatus').textContent='이전 연도를 복원했습니다. 연간 조회 버튼을 눌러 조회하세요.';
+
+for(const id of ['period','monthA','monthB'])$(id).addEventListener('click',()=>{if($(id).disabled)return;try{$(id).showPicker?.();}catch{/* Native typing/selection stays available when the browser has no picker API. */}});

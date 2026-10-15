@@ -21,7 +21,9 @@ function refreshProvider(){
  if($('period').value>$('period').max)$('period').value=$('period').max;
  if($('period').value<$('period').min)$('period').value=$('period').min;
  for(const id of ['monthA','monthB']){$(id).min=min.slice(0,7);$(id).max=latest.slice(0,7);if($(id).value>$(id).max)$(id).value=$(id).max;if($(id).value<$(id).min)$(id).value=$(id).min;}
- $('year').min=provider==='kma'?'1972':'1940';$('year').max=latest.slice(0,4);if($('year').value>$('year').max)$('year').value=$('year').max;if($('year').value<$('year').min)$('year').value=$('year').min;
+ const yearSelect=$('year'),yearMin=provider==='kma'?'1972':'1940',yearMax=latest.slice(0,4),preferred=yearSelect.value||readSettings().year||yearMax;yearSelect.min=yearMin;yearSelect.max=yearMax;
+ if(yearSelect.dataset.range!==yearMin+'-'+yearMax){yearSelect.innerHTML=Array.from({length:Number(yearMax)-Number(yearMin)+1},(_,i)=>{const year=Number(yearMax)-i;return `<option value="${year}">${year}년</option>`;}).join('');yearSelect.dataset.range=yearMin+'-'+yearMax;yearSelect.value=String(Math.min(Number(yearMax),Math.max(Number(yearMin),/^\d{4}$/.test(preferred)?Number(preferred):Number(yearMax))));}
+ if(yearSelect.value>yearMax)yearSelect.value=yearMax;if(yearSelect.value<yearMin)yearSelect.value=yearMin;if(typeof updateYearNavigation==='function')updateYearNavigation();
  $('databaseNote').textContent=sourceDescription();$('latLabel').textContent=provider==='kma'?'산청 관측소 289 · 석대마을과 다른 위치':'방목리카페 · 35.3249° N, 127.9225° E';$('apiHint').textContent=provider==='kma'?'기상청 관측 · 전일 자료 제공 지연 가능':'ERA5 재분석 · 7일 전까지 조회';updateWeekday();
 }
 function setupProvider(){

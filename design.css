@@ -22,3 +22,5 @@
 td.rain-wet{background:#e8f4eb!important}td.rain-zero{background:#fafafa!important}.rain-zero span,.rain-zero strong{color:inherit!important;font-weight:400!important}
 
 .copyright a{display:inline-block;color:#476553;text-decoration:underline;text-underline-offset:3px;margin-left:8px;overflow-wrap:anywhere}@media(max-width:700px){.copyright a{display:block;margin-left:0;margin-top:6px}}
+
+.year-selector{display:grid;grid-template-columns:auto minmax(110px,1fr) auto;gap:8px;align-items:center}.year-selector select{width:100%;min-width:0;min-height:46px}.year-selector button{min-height:46px;padding:10px 14px;white-space:nowrap}.year-selector button:disabled{opacity:.45;cursor:default}@media(max-width:700px){.year-form{grid-template-columns:1fr}.year-form>.primary{width:100%}.year-selector{grid-template-columns:64px minmax(0,1fr) 64px}.year-selector button{padding:10px 6px}}
