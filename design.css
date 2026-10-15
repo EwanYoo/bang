@@ -20,3 +20,5 @@
 
 /* Keep wet and dry precipitation distinct on narrow screens too. */
 td.rain-wet{background:#e8f4eb!important}td.rain-zero{background:#fafafa!important}.rain-zero span,.rain-zero strong{color:inherit!important;font-weight:400!important}
+
+.copyright a{display:inline-block;color:#476553;text-decoration:underline;text-underline-offset:3px;margin-left:8px;overflow-wrap:anywhere}@media(max-width:700px){.copyright a{display:block;margin-left:0;margin-top:6px}}

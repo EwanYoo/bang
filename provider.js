@@ -43,6 +43,7 @@ async function fetchWeatherSource(start,end,{fresh=false}={}){
  try{
   const url=sourceProvider==='kma'?'https://bang-kma-api-20261014.voidbn.chatgpt.site/weather?'+new URLSearchParams({start,end,schema:'rain-interval-v3',...(fresh?{refresh:Date.now()}: {})}):'https://archive-api.open-meteo.com/v1/archive?'+new URLSearchParams({latitude:String(REQUEST_COORDINATES.latitude),longitude:String(REQUEST_COORDINATES.longitude),start_date:start,end_date:nextWeatherDay(end),hourly:'temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,wind_direction_10m',models:'era5',timezone:'Asia/Seoul',wind_speed_unit:'ms'});
   const res=await fetch(url,{signal:controller.signal,cache:fresh?'reload':'default'});let data;try{data=await res.json();}catch{throw Error('자료 제공 서버의 응답을 읽지 못했습니다. 다시 시도해 주세요.');}
+  if(!data||typeof data!=='object'||Array.isArray(data))throw Error('자료 제공 서버의 응답 형식이 올바르지 않습니다. 다시 시도해 주세요.');
   if(!res.ok||data.error)throw Error(readableError(data,res.status));
   const fields=['temperature_2m','relative_humidity_2m','precipitation','wind_speed_10m','wind_direction_10m'];
   if(sourceProvider==='era5'&&(!Array.isArray(data.hourly?.time)||!fields.every(k=>Array.isArray(data.hourly[k])&&data.hourly[k].length===data.hourly.time.length)))throw Error('ERA5 자료 일부가 누락됐습니다. 다시 시도해 주세요.');
@@ -50,7 +51,7 @@ async function fetchWeatherSource(start,end,{fresh=false}={}){
   data={...data,retrievedAt:data.retrievedAt||new Date().toISOString(),sourceProvider,requestCoordinates:REQUEST_COORDINATES,fromCache:false};
   const historical=end<new Date(Date.parse(todayKST())-7*86400000).toISOString().slice(0,10),ttl=historical?86400000:300000;
   putCache(key,{data,expires:Date.now()+ttl});return data;
- }finally{clearTimeout(timer);}
+ }catch(error){if(error.name==='TypeError')throw Error('자료 서버에 연결하지 못했습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.');throw error;}finally{clearTimeout(timer);}
 }
 function winterAtEnd(time){const month=Number(shiftWeatherHour(time,-1).slice(5,7));return month<=3||month>=11;}
 function sourceIntervals(data){
