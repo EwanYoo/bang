@@ -2,6 +2,8 @@
 let provider='era5';
 const REQUEST_COORDINATES={latitude:35.3249,longitude:127.9225},STATION_COORDINATES={latitude:35.4130,longitude:127.8791};
 const SETTINGS_KEY='seokdae-weather-settings-v2',CACHE_KEY='seokdae-weather-cache-v3';
+const CAFE_MAP_URL='https://map.kakao.com/link/map/%EB%B0%A9%EB%AA%A9%EB%A6%AC%EC%B9%B4%ED%8E%98,35.3249,127.9225';
+function cafeMapLink(){return `<a class="place-link" href="${CAFE_MAP_URL}" target="_blank" rel="noopener noreferrer" aria-label="방목리카페 지도 보기 (새 창)">방목리카페</a>`;}
 let memoryCache=new Map();
 function readSettings(){try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}')||{};}catch{return {};}}
 function saveSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify({provider,mode,period:$('period').value,monthA:$('monthA').value,monthB:$('monthB').value,sameDays:$('sameDays').checked,year:$('year').value,view:typeof activeView==='undefined'?'weather':activeView}));}catch{}}
@@ -24,7 +26,7 @@ function refreshProvider(){
  const yearSelect=$('year'),yearMin=provider==='kma'?'1972':'1940',yearMax=latest.slice(0,4),preferred=yearSelect.value||readSettings().year||yearMax;yearSelect.min=yearMin;yearSelect.max=yearMax;
  if(yearSelect.dataset.range!==yearMin+'-'+yearMax){yearSelect.innerHTML=Array.from({length:Number(yearMax)-Number(yearMin)+1},(_,i)=>{const year=Number(yearMax)-i;return `<option value="${year}">${year}년</option>`;}).join('');yearSelect.dataset.range=yearMin+'-'+yearMax;yearSelect.value=String(Math.min(Number(yearMax),Math.max(Number(yearMin),/^\d{4}$/.test(preferred)?Number(preferred):Number(yearMax))));}
  if(yearSelect.value>yearMax)yearSelect.value=yearMax;if(yearSelect.value<yearMin)yearSelect.value=yearMin;if(typeof updateYearNavigation==='function')updateYearNavigation();
- $('databaseNote').textContent=sourceDescription();$('latLabel').textContent=provider==='kma'?'산청 관측소 289 · 석대마을과 다른 위치':'방목리카페 · 35.3249° N, 127.9225° E';$('apiHint').textContent=provider==='kma'?'기상청 관측 · 전일 자료 제공 지연 가능':'ERA5 재분석 · 7일 전까지 조회';updateWeekday();
+ $('databaseNote').innerHTML=provider==='era5'?sourceDescription().replace('방목리카페',cafeMapLink()):sourceDescription();$('latLabel').innerHTML=provider==='kma'?'산청 관측소 289 · 석대마을과 다른 위치':cafeMapLink()+' · 35.3249° N, 127.9225° E';$('apiHint').textContent=provider==='kma'?'기상청 관측 · 전일 자료 제공 지연 가능':'ERA5 재분석 · 7일 전까지 조회';updateWeekday();
 }
 function setupProvider(){
  $('database').onchange=()=>{if(isWorking()){$('database').value=provider;return;}provider=$('database').value;clear();resetComparison();resetYear();refreshProvider();$('status').textContent='자료 출처를 변경했습니다. 기간을 선택하고 조회하세요.';$('compareStatus').textContent=$('yearStatus').textContent='선택한 출처로 조회하세요.';saveSettings();};refreshProvider();
